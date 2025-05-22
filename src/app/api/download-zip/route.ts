@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': zipBuffer.byteLength.toString(),
       },
     });
   } catch (error) {

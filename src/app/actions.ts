@@ -62,12 +62,6 @@ export async function downloadArticleZip({
   content: string[];
   imageUrl?: string;
 }) {
-  const folderName = topic
-    .toLowerCase()
-    .replace(/[^\w\u0400-\u04FF]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
-
   const htmlContent = getHtmlArticleContent({
     topic,
     content,
@@ -101,7 +95,7 @@ export async function downloadArticleZip({
 
   const zipBuffer = await zip.generateAsync({ type: 'arraybuffer' });
   const filename = `article-${Date.now()}.zip`;
-  // ${folderName}-
+
   return { zipBuffer, filename };
 }
 

@@ -41,21 +41,14 @@ export function useMutation<Req, Res>(
         }
 
         const contentType = response.headers.get('content-type');
-        if (
-          contentType?.includes('application/octet-stream') ||
-          contentType?.includes('application/zip')
-        ) {
-          const blob = await response.blob();
-          setData(blob as Res);
+        let responseData;
+        if (contentType === 'application/zip') {
+          responseData = await response.blob();
         } else {
-          const responseData = await response.json();
-          setData(responseData);
+          responseData = await response.json();
         }
 
-        const responseData = await response.json();
-
         setData(responseData);
-
         return { data: responseData };
       } catch (error) {
         const errorMessage =

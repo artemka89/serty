@@ -8,8 +8,9 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 
-import { donloadArticleZip } from '../model/donloadArticleZip';
+import { donloadFile } from '../model/download-file';
 import { getArticlePrompt, getImagePrompt } from '../model/promts';
+import { useDowloadZip } from '../model/use-dowload-zip';
 import { useGetArticle } from '../model/use-get-article';
 import { useGetImage } from '../model/use-get-image';
 
@@ -23,14 +24,14 @@ interface ArticleGeneratorSectionProps {
 export const ArticleGeneratorSection: FC<ArticleGeneratorSectionProps> = ({
   className,
 }) => {
+  const { toast } = useToast();
+
   const [selectedTopic, setSelectedTopic] = useState('');
   const [isSavingHtml, setIsSavingHtml] = useState(false);
-  const [isSavingZip, setIsSavingZip] = useState(false);
 
   const articleQuery = useGetArticle();
   const imageQuery = useGetImage();
-
-  const { toast } = useToast();
+  const dowloadZipQuery = useDowloadZip();
 
   const handleGenerateArticle = () => {
     if (!selectedTopic) return;
@@ -40,7 +41,7 @@ export const ArticleGeneratorSection: FC<ArticleGeneratorSectionProps> = ({
   const handleGenerateImage = () => {
     if (!articleQuery.data) return;
     imageQuery.mutate({
-      prompt: getImagePrompt(articleQuery.data?.[0]),
+      prompt: getImagePrompt(articleQuery.data[0]),
       size: '256x256',
     });
   };
@@ -61,26 +62,32 @@ export const ArticleGeneratorSection: FC<ArticleGeneratorSectionProps> = ({
 
   const handleDownloadAsZip = async () => {
     if (!articleQuery.data) return;
-    setIsSavingZip(true);
-    await donloadArticleZip({
-      data: articleQuery.data,
+    const { data } = await dowloadZipQuery.mutate({
+      topic: articleQuery.data[0],
+      content: articleQuery.data,
+      imageUrl: imageQuery.data,
+    });
+
+    if (!data) return;
+
+    donloadFile({
+      blob: data,
       filename: articleQuery.data[0],
-      imageUrl: imageQuery.data || undefined,
+      format: 'zip',
     })
       .then(() => {
         toast({
           title: 'Скачивание завершено',
-          description: `Статья "${selectedTopic}" скачена.`,
+          description: `Статья "${articleQuery.data?.[0]}" скачена.`,
         });
       })
       .catch(() => {
         toast({
           title: 'Ошибка скачивания',
-          description: `Статья "${selectedTopic}" не скачена.`,
+          description: `Статья "${articleQuery.data?.[0]}" не скачена.`,
           variant: 'destructive',
         });
       });
-    setIsSavingZip(false);
   };
 
   return (
@@ -130,9 +137,9 @@ export const ArticleGeneratorSection: FC<ArticleGeneratorSectionProps> = ({
             <Button
               onClick={handleDownloadAsZip}
               icon={<Archive />}
-              disabled={!articleQuery.data || isSavingZip}
+              disabled={!articleQuery.data || dowloadZipQuery.isLoading}
               variant="outline"
-              isLoading={isSavingZip}
+              isLoading={dowloadZipQuery.isLoading}
               className="grow"
             >
               Скачать ZIP
