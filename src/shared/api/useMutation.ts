@@ -8,7 +8,7 @@ type RequestInit<T> = {
 };
 
 type MutationType<T, K> = {
-  mutate: (body: void | T) => Promise<{ data?: K }>;
+  mutate: (body: void | T, signal?: AbortSignal) => Promise<{ data?: K }>;
   error: string | null;
   isLoading: boolean;
   data?: K;
@@ -23,7 +23,10 @@ export function useMutation<Req, Res>(
   const [isLoading, setIsLoading] = useState(false);
 
   const mutate = useCallback(
-    async (body: Req | void): Promise<{ data?: Res; error?: string }> => {
+    async (
+      body: Req | void,
+      signal?: AbortSignal,
+    ): Promise<{ data?: Res; error?: string }> => {
       setData(undefined);
       setIsLoading(true);
       setError(null);
@@ -34,6 +37,7 @@ export function useMutation<Req, Res>(
           body: JSON.stringify({ ...options?.body, ...body }),
           method: 'POST',
           cache: 'no-cache',
+          signal,
         });
 
         if (!response.ok) {
