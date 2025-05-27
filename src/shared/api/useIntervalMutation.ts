@@ -22,21 +22,6 @@ export const useIntervalMutation = <T, K>(
   const isActiveProcessRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const stop = useCallback(() => {
-    clearTimeout(timerRef.current);
-    timerRef.current = undefined;
-    isActiveProcessRef.current = false;
-    currentIndexRef.current = 0;
-    setIsLoading(false);
-
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-
-      const items = bodyItems.slice(currentIndexRef.current);
-      onAbort?.(items);
-    }
-  }, [bodyItems, onAbort]);
-
   const sendRequest = async () => {
     if (currentIndexRef.current >= bodyItems.length) {
       return;
@@ -64,31 +49,45 @@ export const useIntervalMutation = <T, K>(
         }
       });
 
+    if (!isActiveProcessRef.current) return;
+
     currentIndexRef.current += 1;
 
     if (currentIndexRef.current < bodyItems.length) {
       timerRef.current = setTimeout(sendRequest, interval);
-    }
-
-    if (currentIndexRef.current === bodyItems.length) {
-      stop();
+    } else {
+      clear();
     }
   };
 
   const start = () => {
     if (isActiveProcessRef.current) return;
-    timerRef.current = undefined;
-    currentIndexRef.current = 0;
-    isActiveProcessRef.current = true;
-    setIsLoading(false);
+    clear();
     sendRequest();
   };
+
+  const stop = () => {
+    clear();
+
+    const items = bodyItems.slice(currentIndexRef.current);
+    onAbort?.(items);
+  };
+
+  function clear() {
+    setIsLoading(false);
+    clearTimeout(timerRef.current);
+    timerRef.current = undefined;
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    currentIndexRef.current = 0;
+    isActiveProcessRef.current = false;
+  }
 
   useEffect(() => {
     return () => {
       stop();
     };
-  }, [stop]);
+  }, []);
 
   return { start, stop, isLoading };
 };
