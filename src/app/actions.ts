@@ -11,12 +11,17 @@ export async function saveArticle({
   content: string[];
   imageUrl?: string;
 }) {
-  const folderName = topic.toLowerCase().replace(/\s+/g, '_');
+  const folderName = topic
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[:*?"<>|]/g, '');
+
   const folderPath = path.join(
     process.cwd(),
     'public/generated-articles',
     folderName,
   );
+
   await fsPromises.mkdir(folderPath, { recursive: true });
   let localImagePath = '';
   if (imageUrl) {

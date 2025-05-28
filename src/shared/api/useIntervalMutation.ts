@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface UseIntervalMutationProps<T, K> {
   interval?: number;
@@ -29,6 +29,7 @@ export const useIntervalMutation = <T, K>(
 
     setIsLoading(true);
 
+    isActiveProcessRef.current = true;
     abortControllerRef.current?.abort();
     abortControllerRef.current = new AbortController();
 
