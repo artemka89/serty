@@ -50,9 +50,9 @@ export const useIntervalMutation = <T, K>(
         }
       });
 
-    if (!isActiveProcessRef.current) return;
-
     currentIndexRef.current += 1;
+
+    if (!isActiveProcessRef.current) return;
 
     if (currentIndexRef.current < bodyItems.length) {
       timerRef.current = setTimeout(sendRequest, interval);
@@ -68,9 +68,8 @@ export const useIntervalMutation = <T, K>(
   };
 
   const stop = () => {
-    clear();
-
     const items = bodyItems.slice(currentIndexRef.current);
+    clear();
     onAbort?.(items);
   };
 

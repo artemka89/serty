@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { saveArticle } from '@/app/actions';
 import { useIntervalMutation } from '@/shared/api/useIntervalMutation';
@@ -24,6 +24,16 @@ export const useGetBatchArticle = ({
   );
 
   const articleQuery = useGetArticle();
+  const updateArticleState = useCallback(
+    (id: string, updates: Partial<ProcessedArticles[string]>) => {
+      setProcessedArticles((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], ...updates },
+      }));
+    },
+    [],
+  );
+
   const articleIntervalQuery = useIntervalMutation(
     topics,
     (item, signal) =>
@@ -31,26 +41,13 @@ export const useGetBatchArticle = ({
     {
       interval: Number(interval) * 1000,
       onMutate: async (item) => {
-        setProcessedArticles((prev) => ({
-          ...prev,
-          [item.id]: {
-            topic: item.value,
-            status: 'in_progress',
-            isSaved: false,
-          },
-        }));
+        updateArticleState(item.id, { status: 'in_progress' });
       },
       onSuccess: async ({ data }, item) => {
         const articleParagraphs = data?.data?.split('\n\n').filter(Boolean);
         if (!articleParagraphs) return;
-        setProcessedArticles((prev) => ({
-          ...prev,
-          [item.id]: {
-            topic: item.value,
-            status: 'completed',
-            isSaved: false,
-          },
-        }));
+
+        updateArticleState(item.id, { status: 'completed' });
 
         await saveArticle({
           topic: articleParagraphs[0],
@@ -58,25 +55,11 @@ export const useGetBatchArticle = ({
           imageUrl: undefined,
         });
 
-        setProcessedArticles((prev) => ({
-          ...prev,
-          [item.id]: {
-            topic: item.value,
-            status: 'completed',
-            isSaved: true,
-          },
-        }));
+        updateArticleState(item.id, { isSaved: true });
       },
 
       onError: (_error, item) => {
-        setProcessedArticles((prev) => ({
-          ...prev,
-          [item.id]: {
-            topic: item.value,
-            status: 'error',
-            isSaved: false,
-          },
-        }));
+        updateArticleState(item.id, { status: 'error' });
       },
       onAbort: (items) => {
         setProcessedArticles((prev) => {
@@ -94,7 +77,7 @@ export const useGetBatchArticle = ({
     },
   );
 
-  const startGenerate = () => {
+  const startGenerate = useCallback(() => {
     setProcessedArticles((prev) => {
       const updated = { ...prev };
       topics.forEach((item) => {
@@ -108,7 +91,7 @@ export const useGetBatchArticle = ({
     });
 
     articleIntervalQuery.start();
-  };
+  }, [articleIntervalQuery, topics]);
 
   return {
     data: processedArticles,
