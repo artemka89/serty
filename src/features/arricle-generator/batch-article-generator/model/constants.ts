@@ -1,0 +1,14 @@
+export const TIMES = [
+  { label: '15 секунд', value: '15' },
+  { label: '2 минуты', value: '120' },
+  { label: '5 минут', value: '300' },
+  { label: '10 минут', value: '600' },
+  { label: '15 минут', value: '900' },
+];
+export const STATUSES = {
+  ['pending']: 'Ожидает',
+  ['in_progress']: 'Генерация',
+  ['completed']: 'Завершен',
+  ['error']: 'Ошибка',
+  ['canceled']: 'Отменен',
+};
