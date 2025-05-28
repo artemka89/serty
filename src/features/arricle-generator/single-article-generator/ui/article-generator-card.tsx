@@ -2,7 +2,7 @@
 
 import React, { type FC } from 'react';
 
-import { TOPICS } from '@/features/article-generator/model/constants';
+import { TOPICS } from '@/features/arricle-generator/model/constants';
 import { cn } from '@/shared/lib/cn';
 import {
   Card,

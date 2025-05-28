@@ -8,20 +8,20 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 
-import { donloadFile } from '../model/download-file';
-import { getArticlePrompt, getImagePrompt } from '../model/promts';
-import { useDowloadZip } from '../model/use-dowload-zip';
-import { useGetArticle } from '../model/use-get-article';
-import { useGetImage } from '../model/use-get-image';
+import { donloadFile } from '../../model/download-file';
+import { getArticlePrompt, getImagePrompt } from '../../model/promts';
+import { useDowloadZip } from '../../model/use-dowload-zip';
+import { useGetArticle } from '../../model/use-get-article';
+import { useGetImage } from '../../model/use-get-image';
 
 import { ArticleGeneratorCard } from './article-generator-card';
 import { ArticleGeneratorPreview } from './article-generator-preview';
 
-interface ArticleGeneratorSectionProps {
+interface SingleArticleGeneratorProps {
   className?: string;
 }
 
-export const ArticleGeneratorSection: FC<ArticleGeneratorSectionProps> = ({
+export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
   className,
 }) => {
   const { toast } = useToast();
