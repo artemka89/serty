@@ -69,8 +69,8 @@ export const useIntervalMutation = <T, K>(
 
   const stop = () => {
     const items = bodyItems.slice(currentIndexRef.current);
-    clear();
     onAbort?.(items);
+    clear();
   };
 
   function clear() {

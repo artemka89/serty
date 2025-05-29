@@ -1,3 +1,5 @@
+import { ButchArticlesStatus } from './types';
+
 export const TIMES = [
   { label: '15 секунд', value: '15' },
   { label: '2 минуты', value: '120' },
@@ -5,9 +7,10 @@ export const TIMES = [
   { label: '10 минут', value: '600' },
   { label: '15 минут', value: '900' },
 ];
-export const STATUSES = {
+export const STATUSES: Record<ButchArticlesStatus, string> = {
   ['pending']: 'Ожидает',
-  ['in_progress']: 'Генерация',
+  ['text_in_progress']: 'Генерация текста',
+  ['image_in_progress']: 'Генерация изображения',
   ['completed']: 'Завершен',
   ['error']: 'Ошибка',
   ['canceled']: 'Отменен',

@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
 import {
   Select,
   SelectContent,
@@ -46,8 +45,12 @@ export const BatchArticlesGenerator: FC<BatchArticlesGeneratorProps> = ({
     interval,
   });
 
-  const addTopic = (value: string) => {
-    setTopics((prev) => [...prev, { id: Date.now().toString(), value: value }]);
+  const addTopic = (value: string[]) => {
+    const newTopics = value.map((item, index) => ({
+      id: `${Date.now().toString()}-${index}`,
+      value: item,
+    }));
+    setTopics((prev) => [...prev, ...newTopics]);
   };
 
   const removeTopic = (id: string) => {
@@ -65,7 +68,9 @@ export const BatchArticlesGenerator: FC<BatchArticlesGeneratorProps> = ({
         <CardHeader>
           <CardTitle>Настройка пакетной генерации</CardTitle>
           <CardDescription>
-            Добавьте темы и выберите интервал генерации
+            {
+              'Добавьте одну или несколько тем, разделяя " ; " и выберите интервал генерации'
+            }
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

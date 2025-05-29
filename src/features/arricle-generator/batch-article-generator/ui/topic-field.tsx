@@ -6,7 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 
 interface TopicFieldProps {
-  onClickAdd: (value: string) => void;
+  onClickAdd: (value: string[]) => void;
   disabled?: boolean;
   className?: string;
 }
@@ -19,7 +19,8 @@ export const TopicField: FC<TopicFieldProps> = ({
   const [value, setValue] = useState('');
 
   const handleClick = () => {
-    onClickAdd(value);
+    const valueArray = value.split(';').map((item) => item.trim());
+    onClickAdd(valueArray);
     setValue('');
   };
 

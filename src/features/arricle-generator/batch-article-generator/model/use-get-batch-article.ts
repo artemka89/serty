@@ -1,12 +1,13 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { saveArticle } from '@/app/actions';
 import { useIntervalMutation } from '@/shared/api/useIntervalMutation';
 
-import { getArticlePrompt } from '../../model/promts';
+import { getArticlePrompt, getImagePrompt } from '../../model/promts';
 import { useGetArticle } from '../../model/use-get-article';
+import { useGetImage } from '../../model/use-get-image';
 
 import { ProcessedArticles, Topic } from './types';
 
@@ -24,6 +25,8 @@ export const useGetBatchArticle = ({
   );
 
   const articleQuery = useGetArticle();
+  const imageQuery = useGetImage();
+
   const updateArticleState = useCallback(
     (id: string, updates: Partial<ProcessedArticles[string]>) => {
       setProcessedArticles((prev) => ({
@@ -34,48 +37,71 @@ export const useGetBatchArticle = ({
     [],
   );
 
-  const articleIntervalQuery = useIntervalMutation(
-    topics,
-    (item, signal) =>
-      articleQuery.mutate({ prompt: getArticlePrompt(item.value) }, signal),
-    {
-      interval: Number(interval) * 1000,
-      onMutate: async (item) => {
-        updateArticleState(item.id, { status: 'in_progress' });
-      },
-      onSuccess: async ({ data }, item) => {
-        const articleParagraphs = data?.data?.split('\n\n').filter(Boolean);
-        if (!articleParagraphs) return;
+  const mutate = async (item: Topic, signal?: AbortSignal) => {
+    updateArticleState(item.id, { status: 'text_in_progress' });
 
-        updateArticleState(item.id, { status: 'completed' });
+    const { data: article } = await articleQuery.mutate(
+      { prompt: getArticlePrompt(item.value) },
+      signal,
+    );
 
-        await saveArticle({
-          topic: articleParagraphs[0],
-          content: articleParagraphs,
-          imageUrl: undefined,
-        });
+    if (!article) return;
 
-        updateArticleState(item.id, { isSaved: true });
-      },
+    const paragraphs = article.data.split('\n\n').filter(Boolean);
+    updateArticleState(item.id, { status: 'image_in_progress' });
 
-      onError: (_error, item) => {
-        updateArticleState(item.id, { status: 'error' });
+    const { data: image } = await imageQuery.mutate(
+      {
+        prompt: getImagePrompt(paragraphs[0]),
+        size: '256x256',
       },
-      onAbort: (items) => {
-        setProcessedArticles((prev) => {
-          const updated = { ...prev };
-          items.forEach((item) => {
-            updated[item.id] = {
-              topic: item.value,
-              status: 'canceled',
-              isSaved: false,
-            };
-          });
-          return updated;
-        });
-      },
+      signal,
+    );
+
+    if (!image) return;
+
+    return {
+      id: item.id,
+      topic: paragraphs[0],
+      paragraphs: paragraphs.slice(1),
+      image,
+    };
+  };
+
+  const articleIntervalQuery = useIntervalMutation(topics, mutate, {
+    interval: Number(interval) * 1000,
+
+    onSuccess: async (data, item) => {
+      if (!data) return;
+
+      updateArticleState(data.id, { status: 'completed' });
+
+      await saveArticle({
+        topic: data.topic,
+        content: data.paragraphs,
+        imageUrl: data.image?.url,
+      });
+
+      updateArticleState(item.id, { isSaved: true });
     },
-  );
+
+    onError: (_error, item) => {
+      updateArticleState(item.id, { status: 'error' });
+    },
+    onAbort: (items) => {
+      setProcessedArticles((prev) => {
+        const updated = { ...prev };
+        items.forEach((item) => {
+          updated[item.id] = {
+            topic: item.value,
+            status: 'canceled',
+            isSaved: false,
+          };
+        });
+        return updated;
+      });
+    },
+  });
 
   const startGenerate = useCallback(() => {
     setProcessedArticles((prev) => {

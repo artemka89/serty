@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { NextResponse } from 'next/server';
 
 import { CONFIG } from '@/shared/model/config';
-
 type ResponseGenerateImage = {
   success: boolean;
   result: {
@@ -40,33 +39,38 @@ export async function POST(request: Request) {
       );
     }
 
-    const response = await fetch(`${CONFIG.BASE_API_URL}/chat-dalle`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `ApiKey ${CONFIG.DALLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        ...body,
-        model: 'dall-e-2',
-        quality: 'standard',
-        style: 'natural',
-      }),
+    // const response = await fetch(`${CONFIG.BASE_API_URL}/chat-dalle`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: `ApiKey ${CONFIG.DALLE_API_KEY}`,
+    //   },
+    //   body: JSON.stringify({
+    //     ...body,
+    //     model: 'dall-e-2',
+    //     quality: 'standard',
+    //     style: 'natural',
+    //   }),
+    // });
+
+    // if (!response.ok) {
+    //   const errorData = await response.json();
+    //   throw new Error(
+    //     `Error from API: ${errorData.message || response.statusText}`,
+    //   );
+    // }
+
+    // const remoteData = await response.json();
+
+    const imageUrl = await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(
+          'https://www.eduportal44.ru/Galich/school3/SiteAssets/DocLib73/Forms/AllItems/1938632.png',
+        );
+      }, 3000);
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        `Error from API: ${errorData.message || response.statusText}`,
-      );
-    }
-
-    const remoteData: ResponseGenerateImage = await response.json();
-
-    return NextResponse.json(
-      { url: remoteData.result.data.data[0].url },
-      { status: 201 },
-    );
+    return NextResponse.json({ url: imageUrl }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Serever error' }, { status: 500 });
   }

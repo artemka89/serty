@@ -1,6 +1,7 @@
 export type ButchArticlesStatus =
   | 'pending'
-  | 'in_progress'
+  | 'text_in_progress'
+  | 'image_in_progress'
   | 'completed'
   | 'error'
   | 'canceled';

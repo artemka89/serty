@@ -140,7 +140,7 @@ const getHtmlArticleContent = ({
     }
     .article-image {
       display: block;
-      max-width: 100%;
+      max-width: 300px;
       height: auto;
       margin: 20px auto;
       border-radius: 8px;
@@ -177,10 +177,7 @@ const getHtmlArticleContent = ({
   }
   
   <div class="article-content">
-    ${content
-      .slice(1)
-      .map((paragraph) => `<p>${paragraph}</p>`)
-      .join('')}
+    ${content.map((paragraph) => `<p>${paragraph}</p>`).join('')}
   </div>
 </body>
 </html>

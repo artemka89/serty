@@ -51,7 +51,7 @@ export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
     setIsSavingHtml(true);
     await saveArticle({
       topic: articleQuery.data[0],
-      content: articleQuery.data,
+      content: articleQuery.data.slice(1),
       imageUrl: imageQuery.data,
     });
     toast({
