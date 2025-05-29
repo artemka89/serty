@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import { Textarea } from '@/shared/ui/textarea';
 
 interface TopicFieldProps {
   onClickAdd: (value: string[]) => void;
@@ -18,22 +19,30 @@ export const TopicField: FC<TopicFieldProps> = ({
 }) => {
   const [value, setValue] = useState('');
 
-  const handleClick = () => {
+  const onSentValue = () => {
+    if (!value.trim()) return;
     const valueArray = value.split(';').map((item) => item.trim());
     onClickAdd(valueArray);
     setValue('');
   };
 
+  const handleClick = (event?: React.KeyboardEvent) => {
+    if (event && event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      onSentValue();
+    }
+  };
+
   return (
     <div className={cn(className, 'flex space-x-2')}>
-      <Input
+      <Textarea
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Ведите тему"
-        onKeyDown={(e) => e.key === 'Enter' && handleClick()}
+        onKeyDown={handleClick}
         disabled={disabled}
       />
-      <Button onClick={handleClick} size="icon" disabled={!value}>
+      <Button onClick={onSentValue} size="icon" disabled={!value}>
         <Plus className="h-4 w-4" />
       </Button>
     </div>
