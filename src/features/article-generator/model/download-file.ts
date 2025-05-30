@@ -1,4 +1,4 @@
-export async function donloadFile({
+export async function downloadFile({
   blob,
   filename,
   format,

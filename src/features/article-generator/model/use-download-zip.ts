@@ -1,14 +1,14 @@
 import { useMutation } from '@/shared/api/useMutation';
 
-type RequestDowloadZip = {
+type RequestDownloadZip = {
   content: string[];
   topic: string;
   imageUrl?: string;
 };
 
-export const useDowloadZip = () => {
+export const useDownloadZip = () => {
   const { mutate, data, error, isLoading } = useMutation<
-    RequestDowloadZip,
+    RequestDownloadZip,
     Blob
   >(`api/download-zip`, {
     headers: { 'Content-Type': 'application/json' },

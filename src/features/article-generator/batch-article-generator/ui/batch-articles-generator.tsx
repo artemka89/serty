@@ -1,7 +1,7 @@
 'use client';
 
-import { FC, useRef, useState } from 'react';
-import { Play, Plus, Square } from 'lucide-react';
+import { FC, useState } from 'react';
+import { Play, Square } from 'lucide-react';
 
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';

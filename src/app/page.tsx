@@ -1,15 +1,8 @@
-import { BatchArticlesGenerator } from '@/features/arricle-generator';
-import { SingleArticleGenerator } from '@/features/arricle-generator';
+import { BatchArticlesGenerator } from '@/features/article-generator';
+import { SingleArticleGenerator } from '@/features/article-generator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
 export default async function Home() {
-  const response = await fetch(
-    'https://www.eduportal44.ru/Galich/school3/SiteAssets/DocLib73/Forms/AllItems/1938632.png',
-    { method: 'GET' },
-  );
-
-  await response.blob();
-
   return (
     <main className="container mx-auto px-4 py-8">
       <h1 className="mb-8 text-center text-3xl font-bold">

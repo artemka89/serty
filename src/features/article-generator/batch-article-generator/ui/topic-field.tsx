@@ -3,7 +3,6 @@ import { Plus } from 'lucide-react';
 
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 
 interface TopicFieldProps {

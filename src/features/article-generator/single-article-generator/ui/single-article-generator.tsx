@@ -8,9 +8,9 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';
 
-import { donloadFile } from '../../model/download-file';
+import { downloadFile } from '../../model/download-file';
 import { getArticlePrompt, getImagePrompt } from '../../model/promts';
-import { useDowloadZip } from '../../model/use-dowload-zip';
+import { useDownloadZip } from '../../model/use-download-zip';
 import { useGetArticle } from '../../model/use-get-article';
 import { useGetImage } from '../../model/use-get-image';
 
@@ -31,7 +31,7 @@ export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
 
   const articleQuery = useGetArticle();
   const imageQuery = useGetImage();
-  const dowloadZipQuery = useDowloadZip();
+  const downloadZipQuery = useDownloadZip();
 
   const handleGenerateArticle = () => {
     if (!selectedTopic) return;
@@ -62,7 +62,7 @@ export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
 
   const handleDownloadAsZip = async () => {
     if (!articleQuery.data) return;
-    const { data } = await dowloadZipQuery.mutate({
+    const { data } = await downloadZipQuery.mutate({
       topic: articleQuery.data[0],
       content: articleQuery.data,
       imageUrl: imageQuery.data,
@@ -70,7 +70,7 @@ export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
 
     if (!data) return;
 
-    donloadFile({
+    downloadFile({
       blob: data,
       filename: articleQuery.data[0],
       format: 'zip',
@@ -118,7 +118,7 @@ export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
               isLoading={imageQuery.isLoading}
               className="w-full"
             >
-              Гнерация изображения с DALL-E
+              Генерация изображения с DALL-E
             </Button>
           </>
         }
@@ -137,9 +137,9 @@ export const SingleArticleGenerator: FC<SingleArticleGeneratorProps> = ({
             <Button
               onClick={handleDownloadAsZip}
               icon={<Archive />}
-              disabled={!articleQuery.data || dowloadZipQuery.isLoading}
+              disabled={!articleQuery.data || downloadZipQuery.isLoading}
               variant="outline"
-              isLoading={dowloadZipQuery.isLoading}
+              isLoading={downloadZipQuery.isLoading}
               className="grow"
             >
               Скачать ZIP
