@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { downloadArticleZip } from '@/app/actions';
+import { downloadArticleZip } from '@/shared/lib/actions';
 
 const GenerateImageSchema = z.object({
   topic: z.string().min(3, 'Заголовок должен быть не менее 3 символов'),

@@ -1,4 +1,4 @@
-import { useMutation } from '@/shared/api/useMutation';
+import { useMutation } from '@/shared/api/use-mutation';
 
 type RequestDownloadZip = {
   content: string[];

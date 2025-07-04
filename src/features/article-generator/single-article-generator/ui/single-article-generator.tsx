@@ -3,7 +3,7 @@
 import React, { type FC, useState } from 'react';
 import { Archive, FileText, ImageIcon, Save } from 'lucide-react';
 
-import { saveArticle } from '@/app/actions';
+import { saveArticle } from '@/shared/lib/actions';
 import { useToast } from '@/shared/hooks/use-toast';
 import { cn } from '@/shared/lib/cn';
 import { Button } from '@/shared/ui/button';

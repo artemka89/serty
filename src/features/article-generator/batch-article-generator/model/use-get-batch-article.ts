@@ -2,8 +2,8 @@
 
 import { useCallback, useState } from 'react';
 
-import { saveArticle } from '@/app/actions';
-import { useIntervalMutation } from '@/shared/api/useIntervalMutation';
+import { useIntervalMutation } from '@/shared/api/use-Interval-mutation';
+import { saveArticle } from '@/shared/lib/actions';
 
 import { getArticlePrompt, getImagePrompt } from '../../model/promts';
 import { useGetArticle } from '../../model/use-get-article';
